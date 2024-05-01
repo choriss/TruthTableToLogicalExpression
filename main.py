@@ -110,7 +110,7 @@ def copy_answer():
 
 # Tkinterウィンドウの設定
 root = tkinter.Tk()
-root.title("Excel Data Viewer")
+root.title("Truth Table To Logical Expression")
 
 # データ表示用のフレーム
 data_frame = tkinter.Frame(root)
@@ -137,20 +137,20 @@ target_entry_label.grid(row=3,column=0)
 # target_entry.grid(row=3,column=1)
 
 target_var = tkinter.StringVar()
-target_entry_label_combo = ttk.Combobox(root,values=[],textvariable=target_var,state="readonly")
+target_entry_label_combo = ttk.Combobox(root,values=[],textvariable=target_var,state="readonly",width=17)
 target_entry_label_combo.grid(row=3,column=1)
 
 calc_button = tkinter.Button(root,text="calc",command=solve_truth_formula)
-calc_button.grid(row=4,column=0)
+calc_button.grid(row=3,column=2)
 
 answer_copy_button = tkinter.Button(root,text="copy",command=copy_answer)
-answer_copy_button.grid(row=5,column=2)
+answer_copy_button.grid(row=4,column=2)
 
 result_label = tkinter.Label(root,text="result:")
-result_label.grid(row=5,column=0)
+result_label.grid(row=4,column=0)
 
 result_display = tkinter.Entry(root)
-result_display.grid(row=5,column=1)
+result_display.grid(row=4,column=1)
 
 
 
