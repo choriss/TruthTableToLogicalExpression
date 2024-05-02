@@ -1,19 +1,31 @@
 import tkinter as tk
 
-def get_frame_size():
-    width = frame.winfo_width()
-    height = frame.winfo_height()
-    print("Frameの幅:", width)
-    print("Frameの高さ:", height)
+def on_configure(event):
+    canvas.configure(scrollregion=canvas.bbox("all"))
 
 root = tk.Tk()
+root.geometry("300x200")
 
-frame = tk.Frame(root,bg="lightblue")
-frame.pack()
+# Canvasの作成
+canvas = tk.Canvas(root)
+canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+# Frameの作成
+frame = tk.Frame(canvas)
+canvas.create_window((0, 0), window=frame, anchor=tk.NW)
 
+# ラベルをFrameに追加してスクロールさせる
+for i in range(50):
+    tk.Label(frame, text=f"Label {i}").pack()
 
-button = tk.Button(frame, text="Frameの大きさを取得", command=get_frame_size)
-button.pack()
+# スクロールバーの作成
+scrollbar = tk.Scrollbar(root, orient=tk.VERTICAL, command=canvas.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+# Canvasとスクロールバーの連動
+canvas.configure(yscrollcommand=scrollbar.set)
+
+# Canvasのスクロール領域を設定
+frame.bind("<Configure>", on_configure)
 
 root.mainloop()

@@ -4,6 +4,7 @@ from tkinter import filedialog
 import tkinter.ttk as ttk
 import ctypes
 import pyperclip
+import time
 
 try:
     ctypes.windll.shcore.SetProcessDpiAwareness(True)
@@ -85,18 +86,19 @@ def display_data(df):
         for j, value in enumerate(df[col]):
             tkinter.Label(data_frame, text=value, borderwidth=1, relief="solid",font=font).grid(row=j+3, column=i+1, sticky="nsew")
             truth_table_dict[col].append(int(value))
-    print(data_frame.winfo_reqheight())
-    try:
-        data_frame_canvas.delete(display_frame)
-    except:
-        pass
 
-    data_frame_canvas.configure(scrollregion=(0, 0, 900, 900))
-    data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
+    #time.sleep(10)
+    print(data_frame.winfo_reqheight())
+
+
+
 
     # print(data_frame.winfo_height())
-    display_frame = data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw", width=data_frame.winfo_width(), height=data_frame.winfo_height())
-    data_frame_canvas.config(scrollregion=(0, 0, data_frame.winfo_width(), data_frame.winfo_height()))
+    display_frame = data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
+    #data_frame_canvas.config(scrollregion=(0, 0, data_frame.winfo_width(), data_frame.winfo_height()))
+    data_frame_canvas.configure(scrollregion=data_frame_canvas.bbox("all"))
+    data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
+    print(data_frame.winfo_reqheight())
     
 
     # target_entry_label_combo["values"] = target_combox_temp
@@ -179,7 +181,7 @@ data_frame = tkinter.Frame(data_frame_canvas)
 data_frame.grid(row=0,column=0)
 
 # Canvas上の座標(0, 0)に対してFrameの左上（nw=north-west）をあてがうように、Frameを埋め込む
-display_frame =  data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
+# display_frame =  data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
 
 # ファイル読み込みボタン
 load_button = tkinter.Button(root, text="Load Data", command=load_data)
