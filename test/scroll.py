@@ -1,4 +1,5 @@
 import tkinter as tk
+import uuid
 
 def on_configure(event):
     canvas.configure(scrollregion=canvas.bbox("all"))
@@ -27,5 +28,11 @@ canvas.configure(yscrollcommand=scrollbar.set)
 
 # Canvasのスクロール領域を設定
 frame.bind("<Configure>", on_configure)
+
+def on_btn_click():
+    tk.Label(frame, text=f"Label {uuid.uuid4()}").pack()
+
+tk.Button(frame,text="button",command=on_btn_click).pack()
+
 
 root.mainloop()

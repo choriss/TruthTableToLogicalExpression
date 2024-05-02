@@ -59,9 +59,7 @@ def display_data(df):
     # スクロールバー
     num_of_symbol = list(enumerate(columns))[-1][0]+1
     # print(num_of_symbol)
-    data_frame_y_bar = tkinter.Scrollbar(root,orient=tkinter.VERTICAL)
-    data_frame_y_bar.grid(column=1,row=0)
-    data_frame_y_bar.config(command=data_frame_canvas.yview)
+
 
 
     
@@ -87,18 +85,9 @@ def display_data(df):
             tkinter.Label(data_frame, text=value, borderwidth=1, relief="solid",font=font).grid(row=j+3, column=i+1, sticky="nsew")
             truth_table_dict[col].append(int(value))
 
-    #time.sleep(10)
-    print(data_frame.winfo_reqheight())
-
-
-
-
     # print(data_frame.winfo_height())
-    display_frame = data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
     #data_frame_canvas.config(scrollregion=(0, 0, data_frame.winfo_width(), data_frame.winfo_height()))
     data_frame_canvas.configure(scrollregion=data_frame_canvas.bbox("all"))
-    data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
-    print(data_frame.winfo_reqheight())
     
 
     # target_entry_label_combo["values"] = target_combox_temp
@@ -167,6 +156,9 @@ def solve_truth_formula():
 def copy_answer():
     pyperclip.copy(result_display.get())
 
+def scroll_reflesh():
+    data_frame_canvas.configure(scrollregion=data_frame_canvas.bbox("all"))
+
 # Tkinterウィンドウの設定
 root = tkinter.Tk()
 root.title("Truth Table To Logical Expression")
@@ -181,7 +173,12 @@ data_frame = tkinter.Frame(data_frame_canvas)
 data_frame.grid(row=0,column=0)
 
 # Canvas上の座標(0, 0)に対してFrameの左上（nw=north-west）をあてがうように、Frameを埋め込む
-# display_frame =  data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
+data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
+
+data_frame_y_bar = tkinter.Scrollbar(root,orient=tkinter.VERTICAL)
+data_frame_y_bar.grid(column=1,row=0,sticky="ns")
+data_frame_y_bar.config(command=data_frame_canvas.yview)
+data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
 
 # ファイル読み込みボタン
 load_button = tkinter.Button(root, text="Load Data", command=load_data)
@@ -219,6 +216,9 @@ result_label.grid(row=4,column=0)
 result_display = tkinter.Entry(root)
 result_display.grid(row=4,column=1)
 
+
+refresh_button = tkinter.Button(text="refresh",command=scroll_reflesh)
+refresh_button.grid(row=5,column=0)
 
 
 #辞書初期化
