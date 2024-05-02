@@ -25,6 +25,10 @@ def load_data():
 def display_data(df):
     global input_checkboxes
     global input_checkboxes_var
+
+    global target_checkboxes
+    global target_checkboxes_var
+
     global all_symbols
     font = ("Noto Sans JP",15)
     for widget in data_frame.winfo_children():
@@ -35,32 +39,45 @@ def display_data(df):
 
     input_checkboxes_var = []
     input_checkboxes = []
+    
+    target_checkboxes_var = []
+    target_checkboxes = []
 
     all_symbols = []
+
+    input_checkbox_label = tkinter.Label(data_frame,text="input:")
+    input_checkbox_label.grid(row=0,column=0)
+
+    target_checkbox_label = tkinter.Label(data_frame,text="target:")
+    target_checkbox_label.grid(row=1,column=0)
     
 
     for i, col in enumerate(columns):
         
-        tkinter.Label(data_frame, text=col, borderwidth=1, relief="solid",font=font).grid(row=1, column=i, sticky="nsew")
+        tkinter.Label(data_frame, text=col, borderwidth=1, relief="solid",font=font).grid(row=2, column=i+1, sticky="nsew")
         truth_table_dict[col] = []
         target_combox_temp.append(col)
         input_checkboxes_var.append(tkinter.IntVar())
         input_checkboxes.append(tkinter.Checkbutton(data_frame,variable=input_checkboxes_var[-1]))
-        input_checkboxes[-1].grid(row=0,column=i, sticky="nsew")
+        input_checkboxes[-1].grid(row=0,column=i+1, sticky="nsew")
+
+        target_checkboxes_var.append(tkinter.IntVar())
+        target_checkboxes.append(tkinter.Checkbutton(data_frame,variable=target_checkboxes_var[-1]))
+        target_checkboxes[-1].grid(row=1,column=i+1, sticky="nsew")
 
         all_symbols.append(col)
 
         for j, value in enumerate(df[col]):
-            tkinter.Label(data_frame, text=value, borderwidth=1, relief="solid",font=font).grid(row=j+2, column=i, sticky="nsew")
+            tkinter.Label(data_frame, text=value, borderwidth=1, relief="solid",font=font).grid(row=j+3, column=i+1, sticky="nsew")
             truth_table_dict[col].append(int(value))
 
-    target_entry_label_combo["values"] = target_combox_temp
+    # target_entry_label_combo["values"] = target_combox_temp
     # print(truth_table_dict)
 
 def solve_truth_formula():
     error_label["text"] = ""
     # input_symbols = input_entry.get().split(",")
-    target_symbol = target_var.get()
+    # target_symbol = target_var.get()
 
     input_symbols = []
 
@@ -68,10 +85,16 @@ def solve_truth_formula():
         if input_checkboxes_var[i].get()==1:
             input_symbols.append(all_symbols[i])
 
+    target_symbols = []
+
+    for i in range(len(target_checkboxes_var)):
+        if target_checkboxes_var[i].get()==1:
+            target_symbols.append(all_symbols[i])
+
     # print(input_symbols)
 
     # targetの存在確認
-    if target_symbol == "":
+    if target_symbols == []:
         error_label["text"] = "target is not selected."
         return
     
@@ -81,29 +104,35 @@ def solve_truth_formula():
         return 
     
     # inputにtargetが存在しないか
-    if target_symbol in input_symbols:
-        error_label["text"] = "input includes target."
-        return
+    for i in range(len(target_symbols)):
+        if target_symbols[i] in input_symbols:
+            error_label["text"] = "input includes target."
+            return
+    truth_formula_answers = {}
+    # print(target_symbols)
+    for k in range(len(target_symbols)):
+        #trueリストの生成
+        true_place = []
+        for i in range(len(truth_table_dict[target_symbols[k]])):
+            if truth_table_dict[target_symbols[k]][i] == 1:
+                true_place.append(i)
 
-    #trueリストの生成
-    true_place = []
-    for i in range(len(truth_table_dict[target_symbol])):
-        if truth_table_dict[target_symbol][i] == 1:
-            true_place.append(i)
-
-    true_list = []
-    for i in range(len(true_place)):
-        true_list_temp = []
-        for j in range(len(input_symbols)):
-            true_list_temp.append(truth_table_dict[input_symbols[j]][true_place[i]])
-        true_list.append(true_list_temp)
-    # print(true_list)
-    # symbol 定義
-    sympy_symbols = sympy.symbols(" ".join(input_symbols))
-    trfr = sympy.SOPform(sympy_symbols,true_list)
+        true_list = []
+        for i in range(len(true_place)):
+            true_list_temp = []
+            for j in range(len(input_symbols)):
+                true_list_temp.append(truth_table_dict[input_symbols[j]][true_place[i]])
+            true_list.append(true_list_temp)
+        # print(true_list)
+        # symbol 定義
+        sympy_symbols = sympy.symbols(" ".join(input_symbols))
+        trfr = sympy.SOPform(sympy_symbols,true_list)
+        truth_formula_answers[target_symbols[k]]=trfr
+        
     # print(trfr)
     result_display.delete(0, tkinter.END)
-    result_display.insert(tkinter.END,trfr)
+    result_display.insert(tkinter.END,truth_formula_answers)
+    # print(truth_formula_answers)
 
 def copy_answer():
     pyperclip.copy(result_display.get())
@@ -130,18 +159,18 @@ error_label.grid(row=6,column=0)
 # input_entry = tkinter.Entry(root)
 # input_entry.grid(row=2,column=1)
 
-target_entry_label = tkinter.Label(root,text="target symbol:")
-target_entry_label.grid(row=3,column=0)
+# target_entry_label = tkinter.Label(root,text="target symbol:")
+# target_entry_label.grid(row=3,column=0)
 
 # target_entry = tkinter.Entry(root)
 # target_entry.grid(row=3,column=1)
 
-target_var = tkinter.StringVar()
-target_entry_label_combo = ttk.Combobox(root,values=[],textvariable=target_var,state="readonly",width=17)
-target_entry_label_combo.grid(row=3,column=1)
+# target_var = tkinter.StringVar()
+# target_entry_label_combo = ttk.Combobox(root,values=[],textvariable=target_var,state="readonly",width=17)
+# target_entry_label_combo.grid(row=3,column=1)
 
 calc_button = tkinter.Button(root,text="calc",command=solve_truth_formula)
-calc_button.grid(row=3,column=2)
+calc_button.grid(row=3,column=0,sticky=tkinter.NSEW)
 
 answer_copy_button = tkinter.Button(root,text="copy",command=copy_answer)
 answer_copy_button.grid(row=4,column=2)
