@@ -29,6 +29,8 @@ def display_data(df):
     global target_checkboxes
     global target_checkboxes_var
 
+    global display_frame
+
     global all_symbols
     font = ("Noto Sans JP",15)
     for widget in data_frame.winfo_children():
@@ -50,6 +52,19 @@ def display_data(df):
 
     target_checkbox_label = tkinter.Label(data_frame,text="target:")
     target_checkbox_label.grid(row=1,column=0)
+
+
+
+    # スクロールバー
+    num_of_symbol = list(enumerate(columns))[-1][0]+1
+    # print(num_of_symbol)
+    data_frame_y_bar = tkinter.Scrollbar(root,orient=tkinter.VERTICAL)
+    data_frame_y_bar.grid(column=1,row=0)
+    data_frame_y_bar.config(command=data_frame_canvas.yview)
+
+
+    
+
     
 
     for i, col in enumerate(columns):
@@ -70,6 +85,19 @@ def display_data(df):
         for j, value in enumerate(df[col]):
             tkinter.Label(data_frame, text=value, borderwidth=1, relief="solid",font=font).grid(row=j+3, column=i+1, sticky="nsew")
             truth_table_dict[col].append(int(value))
+    print(data_frame.winfo_reqheight())
+    try:
+        data_frame_canvas.delete(display_frame)
+    except:
+        pass
+
+    data_frame_canvas.configure(scrollregion=(0, 0, 900, 900))
+    data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
+
+    # print(data_frame.winfo_height())
+    display_frame = data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw", width=data_frame.winfo_width(), height=data_frame.winfo_height())
+    data_frame_canvas.config(scrollregion=(0, 0, data_frame.winfo_width(), data_frame.winfo_height()))
+    
 
     # target_entry_label_combo["values"] = target_combox_temp
     # print(truth_table_dict)
@@ -141,9 +169,17 @@ def copy_answer():
 root = tkinter.Tk()
 root.title("Truth Table To Logical Expression")
 
+#データ表示用のcanvas
+
+data_frame_canvas = tkinter.Canvas(root)
+data_frame_canvas.grid(row=0,column=0)
+
 # データ表示用のフレーム
-data_frame = tkinter.Frame(root)
+data_frame = tkinter.Frame(data_frame_canvas)
 data_frame.grid(row=0,column=0)
+
+# Canvas上の座標(0, 0)に対してFrameの左上（nw=north-west）をあてがうように、Frameを埋め込む
+display_frame =  data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
 
 # ファイル読み込みボタン
 load_button = tkinter.Button(root, text="Load Data", command=load_data)
