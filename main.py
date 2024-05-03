@@ -145,6 +145,7 @@ def solve_truth_formula():
         # print(true_list)
         # symbol 定義
         sympy_symbols = sympy.symbols(" ".join(input_symbols))
+        print(sympy_symbols,true_list)
         trfr = sympy.SOPform(sympy_symbols,true_list)
         truth_formula_answers[target_symbols[k]]=trfr
         
@@ -175,18 +176,25 @@ data_frame.grid(row=0,column=0)
 # Canvas上の座標(0, 0)に対してFrameの左上（nw=north-west）をあてがうように、Frameを埋め込む
 data_frame_canvas.create_window((0, 0), window=data_frame, anchor="nw")
 
+#ybar
 data_frame_y_bar = tkinter.Scrollbar(root,orient=tkinter.VERTICAL)
 data_frame_y_bar.grid(column=1,row=0,sticky="ns")
 data_frame_y_bar.config(command=data_frame_canvas.yview)
 data_frame_canvas.configure(yscrollcommand=data_frame_y_bar.set)
 
+#xbar
+data_frame_x_bar = tkinter.Scrollbar(root,orient=tkinter.HORIZONTAL)
+data_frame_x_bar.grid(column=0,row=1,sticky="ew")
+data_frame_x_bar.config(command=data_frame_canvas.xview)
+data_frame_canvas.configure(xscrollcommand=data_frame_x_bar.set)
+
 # ファイル読み込みボタン
 load_button = tkinter.Button(root, text="Load Data", command=load_data)
-load_button.grid(row=1,column=0,sticky=tkinter.NSEW)
+load_button.grid(row=2,column=0,sticky=tkinter.NSEW)
 
 # エラーメッセージ表示用ラベル
 error_label = tkinter.Label(root, fg="red")
-error_label.grid(row=6,column=0)
+error_label.grid(row=7,column=0)
 
 # input_entry_label = tkinter.Label(root,text="input symbol:")
 # input_entry_label.grid(row=2,column=0)
@@ -205,20 +213,20 @@ error_label.grid(row=6,column=0)
 # target_entry_label_combo.grid(row=3,column=1)
 
 calc_button = tkinter.Button(root,text="calc",command=solve_truth_formula)
-calc_button.grid(row=3,column=0,sticky=tkinter.NSEW)
+calc_button.grid(row=4,column=0,sticky=tkinter.NSEW)
 
 answer_copy_button = tkinter.Button(root,text="copy",command=copy_answer)
-answer_copy_button.grid(row=4,column=2)
+answer_copy_button.grid(row=5,column=2)
 
 result_label = tkinter.Label(root,text="result:")
-result_label.grid(row=4,column=0)
+result_label.grid(row=5,column=0)
 
 result_display = tkinter.Entry(root)
-result_display.grid(row=4,column=1)
+result_display.grid(row=5,column=1)
 
 
 refresh_button = tkinter.Button(text="refresh",command=scroll_reflesh)
-refresh_button.grid(row=5,column=0)
+refresh_button.grid(row=6,column=0)
 
 
 #辞書初期化
